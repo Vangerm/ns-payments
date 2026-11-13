@@ -22,7 +22,7 @@ Python 3.12 · FastAPI · SQLAlchemy 2 (async) · PostgreSQL · Alembic · NATS 
 flowchart LR
     U[Пользователь] -->|оплата| P[Платёжный провайдер]
     P -->|webhook| W[FastAPI: /webhooks/yookassa]
-    W -->|1. GET /payments/{id}| P
+    W -->|"1. GET /payments/{id}"| P
     W -->|2. INSERT payment| DB[(PostgreSQL)]
     W -->|3. чек| F[Фискализация: ЛК НПД]
     W -->|4. событие| NATS[(NATS)]
