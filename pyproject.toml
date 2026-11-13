@@ -1,0 +1,16 @@
+[project]
+name = "ns-payments"
+version = "1.0.0"
+description = "Платёжный вебхук-сервис: сверка у провайдера, идемпотентность, чек, событие в NATS"
+requires-python = ">=3.12"
+
+[project.optional-dependencies]
+fiscal = ["nalogovich>=1.0.13"]
+
+[tool.ruff]
+line-length = 90
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+ignore = ["B008"]

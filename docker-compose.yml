@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: payments
+      POSTGRES_PASSWORD: payments
+      POSTGRES_DB: payments
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payments -d payments"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  nats:
+    image: nats:2.11-alpine
+    command: ["-js"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:8222/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  payments:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+      nats:
+        condition: service_started
+    environment:
+      APP_ENV: local
+      LOG_LEVEL: INFO
+      DATABASE_URL: postgresql+asyncpg://payments:payments@db:5432/payments
+      NATS_URL: nats://nats:4222
+      EVENTS_SUBJECT: payments.succeeded
+      # Для реального YooKassa: APP_ENV=prod, ключи магазина и FISCAL_*.
+      YOOKASSA_SHOP_ID: demo-shop
+      YOOKASSA_SECRET_KEY: demo-secret
+      FISCAL_MODE: fake
+    ports:
+      - "8000:8000"
+
+volumes:
+  pgdata:
